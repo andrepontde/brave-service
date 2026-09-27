@@ -14,3 +14,12 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 class Base(DeclarativeBase):
     pass
+
+
+# Actually retrieve session to be able to export to other modules
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
