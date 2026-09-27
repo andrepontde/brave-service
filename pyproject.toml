@@ -1,5 +1,5 @@
 [project]
-name = "brave-abroad"
+name = "brave-service"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-brave-abroad = "brave_abroad:main"
+brave-service = "brave_service:main"
 
 [build-system]
 requires = ["uv_build>=0.12.16,<0.13.0"]

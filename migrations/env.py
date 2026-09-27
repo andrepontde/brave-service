@@ -7,8 +7,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from brave_abroad.database import Base
-from brave_abroad.database.models import Admin, Booking, Event
+from brave_service.database import Base
+from brave_service.database.models import Admin, Booking, Event
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

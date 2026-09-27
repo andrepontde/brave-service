@@ -39,7 +39,6 @@ class BookingResponse(BaseModel):
 
     id: int
     eventbrite_id: str
-    event_id: str
     event_id: int
     attendee_name: str
     attendee_email: EmailStr

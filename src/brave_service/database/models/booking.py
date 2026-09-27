@@ -23,7 +23,7 @@ class Booking(Base):
         String(50),
         nullable=True,
     )
-    status: Mapped[str] = mapped_column(String(50))
+    status: Mapped[str] = mapped_column(String(50),default="pending")
     booking_reference: Mapped[str] = mapped_column(String(255), index=True)
     booked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     eventbrite_metadata: Mapped[dict[str, Any] | None] = mapped_column(

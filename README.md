@@ -1,4 +1,4 @@
-# Brave-Abroad
+# brave-service
 
 ## Requirements
 
@@ -10,7 +10,7 @@
 
 ```bash
 git clone <repository-url>
-cd Brave-Abroad
+cd brave-service
 uv sync
 cp .env.example .env
 ```
@@ -47,3 +47,8 @@ docker compose down
 The local database connection is configured through `DATABASE_URL` in `.env`.
 
 
+To run the backend daemon:
+
+```bash
+uv run fastapi dev src/brave_service/main.py
+```
