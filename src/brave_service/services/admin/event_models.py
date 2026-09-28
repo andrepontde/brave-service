@@ -5,7 +5,12 @@ from typing import Any
 
 @dataclass(frozen=True)
 class CreateEventCommand:
-	"""Validated event data passed from the API layer to the service layer."""
+	"""Request to create an event in the service layer.
+
+	This is deliberately separate from the Pydantic API model so the service
+	does not depend on HTTP or FastAPI types. ``frozen=True`` keeps the validated
+	input unchanged while the service processes it.
+	"""
 
 	eventbrite_id: str | None
 	name: str

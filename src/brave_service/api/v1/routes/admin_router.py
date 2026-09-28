@@ -11,6 +11,7 @@ admin_router = APIRouter(
     tags=["admin"],
 )
 
+# Create a new event. Returns the created event.
 @admin_router.post(
     "/event",
     response_model=EventResponse,
@@ -21,10 +22,16 @@ def create_event(
     db: Session = Depends(get_db),
 ) -> EventResponse:
     try:
+        # unpack the EventCreate model into a CreateEventCommand, then pass it to the AdminService
         command = CreateEventCommand(**new_event.model_dump())
         return AdminService(db).create_event(command)
     except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
+            detail=str(error),
+        ) from error
+    except RuntimeError as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(error),
         ) from error
