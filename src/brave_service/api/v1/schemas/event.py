@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class EventCreate(BaseModel):
-    eventbrite_id: str = Field(min_length=1, max_length=255)
+    eventbrite_id: str | None = Field(default=None, min_length=1, max_length=255)
     name: str = Field(min_length=1, max_length=255)
     description: str | None = None
     starts_at: datetime
@@ -29,7 +29,7 @@ class EventResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    eventbrite_id: str
+    eventbrite_id: str | None
     name: str
     description: str | None
     starts_at: datetime

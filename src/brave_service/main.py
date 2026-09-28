@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 
+from brave_service.api.v1.routes import v1_router
+
 app = FastAPI()
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+app.include_router(v1_router, prefix="/api/v1")
