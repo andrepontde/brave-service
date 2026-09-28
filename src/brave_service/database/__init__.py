@@ -1,3 +1,3 @@
-from .connection import Base, SessionLocal, engine
+from .connection import get_db 
 
 __all__ = ["get_db"]

@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from brave_service.database.models import Event
@@ -29,6 +30,10 @@ class AdminService:
 			eventbrite_metadata=command.eventbrite_metadata,
 		)
 		self.db.add(event)
-		self.db.commit()
+		try:
+			self.db.commit()
+		except IntegrityError as exc:
+			self.db.rollback()
+			raise ValueError("An event with this eventbrite_id already exists") from exc
 		self.db.refresh(event)
 		return event
