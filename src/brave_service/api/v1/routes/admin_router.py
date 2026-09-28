@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from brave_service.api.v1.schemas.event import EventCreate, EventResponse
 from brave_service.database.connection import get_db
-from brave_service.services.admin_service import AdminService
+from brave_service.services.admin import AdminService
+from brave_service.services.admin.event_models import CreateEventCommand
 
 admin_router = APIRouter(
     prefix="/admin",
@@ -20,7 +21,8 @@ def create_event(
     db: Session = Depends(get_db),
 ) -> EventResponse:
     try:
-        return AdminService(db).create_event(**new_event.model_dump())
+        command = CreateEventCommand(**new_event.model_dump())
+        return AdminService(db).create_event(command)
     except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
