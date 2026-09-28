@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from psycopg.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -12,24 +12,21 @@ class AdminService:
 		self.db = db
 
 	def create_event(self, command: CreateEventCommand) -> Event:
-		if command.eventbrite_id is not None:
-			# Retrieve the existing Event for the fast path; an EXISTS query is cheaper,
-			# but it would not replace the commit-time uniqueness check for concurrent requests.
-			existing_event = self.db.scalar(
-				select(Event).where(Event.eventbrite_id == command.eventbrite_id)
-			)
-			if existing_event is not None:
-				raise ValueError("An event with this eventbrite_id already exists")
-
 		event = admin_helpers.event_from_command(command)
 		self.db.add(event)
 		try:
 			self.db.commit()
 		except IntegrityError as exc:
-			# The database catches duplicates that pass the check above. Roll back the
-			# failed transaction, then use ValueError so the router returns a conflict.
 			self.db.rollback()
-			raise ValueError("An event with this eventbrite_id already exists") from exc
+			# PostgreSQL uses UniqueViolation for duplicate IDs; other integrity errors
+			# are unexpected and should not be reported as a conflict.
+			if isinstance(exc.orig, UniqueViolation):
+				raise ValueError(
+					"An event with this eventbrite_id already exists"
+				) from exc
+			raise RuntimeError(
+				"Unexpected database integrity error while creating event"
+			) from exc
 		except Exception as exc:
 			self.db.rollback()
 			raise RuntimeError("Unexpected error occurred while creating event") from exc
