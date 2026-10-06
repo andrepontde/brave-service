@@ -1,0 +1,23 @@
+name: Deploy staging branch to VPS
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/docker/brave-service
+            git pull origin dev
+            docker compose build
+            docker compose up -d
+            docker compose run --rm app uv run alembic upgrade head
