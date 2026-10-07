@@ -52,3 +52,8 @@ To run the backend daemon:
 ```bash
 uv run fastapi dev src/brave_service/main.py
 ```
+To install the dev dependencies:
+
+```bash
+uv sync --dev
+```
