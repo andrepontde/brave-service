@@ -52,6 +52,18 @@ To run the backend daemon:
 ```bash
 uv run fastapi dev src/brave_service/main.py
 ```
+
+To create an administrator account, run the private provisioning command from
+a trusted machine with access to the configured database:
+
+```bash
+uv run create-admin
+```
+
+The command prompts for the email and password without displaying the password.
+It stores only the password hash and does not create a public registration
+endpoint.
+
 To install the dev dependencies:
 
 ```bash
