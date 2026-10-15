@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from brave_service.api.v1.schemas.auth import TokenResponse, LoginRequest
 from brave_service.database.connection import get_db
-from brave_service.services.admin.auth_service import AuthService
+from brave_service.database.models import Admin
+from brave_service.services.auth.auth_service import AuthService
 
 
 auth_router = APIRouter(
@@ -21,7 +22,7 @@ def login(
     db: Session = Depends(get_db),
 ) -> TokenResponse:
     try:
-        return AuthService(db).authenticate_user(
+        return AuthService(db, Admin).authenticate_user(
             login_request.email,
             login_request.password,
         )
