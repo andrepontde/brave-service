@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from brave_service.api.v1.dependencies import get_current_admin
 from brave_service.api.v1.schemas.event import EventCreate, EventResponse
+from brave_service.database.models import Admin
 from brave_service.database.connection import get_db
 from brave_service.services.admin import AdminService
 from brave_service.services.admin.event_models import CreateEventCommand
@@ -20,6 +22,7 @@ admin_router = APIRouter(
 def create_event(
     new_event: EventCreate,
     db: Session = Depends(get_db),
+    current_admin: Admin = Depends(get_current_admin),
 ) -> EventResponse:
     try:
         # unpack the EventCreate model into a CreateEventCommand, then pass it to the AdminService
