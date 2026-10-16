@@ -6,7 +6,9 @@ import httpx
 from psycopg.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
 
+from brave_service.api.v1.dependencies import get_current_admin
 from brave_service.database.connection import get_db
+from brave_service.database.models import Admin
 from brave_service.main import app
 
 
@@ -26,6 +28,7 @@ def event_request() -> dict[str, Any]:
 async def send_create_event_request(
 	db_session: Mock,
 	payload: dict[str, Any],
+	authenticated: bool = True,
 ) -> httpx.Response:
 	# ASGITransport sends an HTTP request directly to the FastAPI app in memory.
 	# No web server or PostgreSQL process is needed for this test.
@@ -37,6 +40,12 @@ async def send_create_event_request(
 		return db_session
 
 	app.dependency_overrides[get_db] = override_get_db
+	if authenticated:
+		app.dependency_overrides[get_current_admin] = lambda: Admin(
+			id=1,
+			email="admin@example.com",
+			password_hash="unused",
+		)
 
 	try:
 		async with httpx.AsyncClient(
@@ -48,6 +57,16 @@ async def send_create_event_request(
 		# Dependency overrides are global on the FastAPI app, so always remove
 		# this test's override before another test starts.
 		app.dependency_overrides.pop(get_db, None)
+		app.dependency_overrides.pop(get_current_admin, None)
+
+
+def test_create_event_rejects_unauthenticated_request(db_session: Mock) -> None:
+	response = asyncio.run(
+		send_create_event_request(db_session, event_request(), authenticated=False),
+	)
+
+	assert response.status_code == 401
+	assert response.json()["detail"] == "Not authenticated"
 
 
 def test_create_event_returns_created_event(db_session: Mock) -> None:
