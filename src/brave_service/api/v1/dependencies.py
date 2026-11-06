@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from brave_service.database.connection import get_db
 from brave_service.database.models import Admin
-from brave_service.services.admin.jwt import decode_access_token
+from brave_service.services.auth.jwt import decode_access_token
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
