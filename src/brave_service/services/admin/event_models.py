@@ -20,3 +20,33 @@ class CreateEventCommand:
 	venue: str | None
 	status: str
 	eventbrite_metadata: dict[str, Any] | None
+
+
+@dataclass(frozen=True)
+class UpdateEventCommand:
+	"""Partial request to update an existing event in the service layer.
+
+	The service layer stays independent of FastAPI types; only fields that are
+	allowed to change on an update are carried here. ``frozen=True`` keeps the
+	validated input unchanged while the service processes it.
+	"""
+
+	name: str | None
+	description: str | None
+	starts_at: datetime | None
+	ends_at: datetime | None
+	venue: str | None
+	status: str | None
+	eventbrite_metadata: dict[str, Any] | None
+
+
+@dataclass(frozen=True)
+class DeleteEventCommand:
+	"""Request to delete an event in the service layer.
+
+	The command carries no mutable data; it only identifies the event to remove.
+	``frozen=True`` keeps the validated input unchanged while the service
+	processes it.
+	"""
+
+	event_id: int
